@@ -10,6 +10,25 @@ public class InventoryManager : MonoBehaviour
 
     public GameObject inventoryItemPrefab;
 
+    int selectedSlotIndex = -1;
+
+    public void ChangeSelectedSlot(InventorySlot selectedSlot)
+    {
+        if (selectedSlotIndex >= 0)
+        {
+            inventorySlots[selectedSlotIndex].Unselect();
+        }
+
+        for (int i = 0; i < inventorySlots.Length; i++)
+        {
+            if (inventorySlots[i] == selectedSlot) 
+            { 
+                selectedSlotIndex = i;
+                break;
+            }
+        }
+    }
+
     public bool AddItem(Item item)
     {
         for (int i = 0; i < inventorySlots.Length; i++) // For stacking
@@ -49,5 +68,23 @@ public class InventoryManager : MonoBehaviour
         InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
 
         inventoryItem.InitializeItem(item);
+    }
+
+    public void SellItem()
+    {
+        InventorySlot selectedSlot = inventorySlots[selectedSlotIndex];
+
+        InventoryItem itemInSlot = selectedSlot.GetComponentInChildren<InventoryItem>();
+
+        if(itemInSlot!=null)
+        {
+            itemInSlot.count--;
+            itemInSlot.RefreshCount();
+
+            if(itemInSlot.count<=0)
+            {
+                Destroy(itemInSlot.gameObject);
+            }
+        }
     }
 }
